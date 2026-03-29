@@ -28,7 +28,7 @@ improv_serial:
 
 # 2. Made for ESPHome Certification Requirements
 dashboard_import:
-  package_import_url: github://EllipsysLabs/esphome-configs/4/congig.yaml@main
+  package_import_url: github://EllipsysLabs/esphome-configs/switch-4c/congig.yaml@main
   import_full_config: true
 
 # 3. System Actions
