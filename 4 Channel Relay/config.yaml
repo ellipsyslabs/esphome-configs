@@ -1,0 +1,137 @@
+substitutions:
+  # These substitutions make it easy to change the core name later if needed
+  name: "switch-4c"
+  friendly_name: "Switch 4C"
+
+esphome:
+  name: "${name}"
+  friendly_name: "${friendly_name}"
+  name_add_mac_suffix: true
+  project:
+    name: "ellipsyslabs.switch_4c"
+    version: "1.0.0"
+
+esp32:
+  board: esp32-c3-devkitm-1
+  variant: esp32c3
+
+logger:
+api:
+
+# 1. Zero-Touch Provisioning
+wifi:
+  ap:
+    ssid: "${friendly_name} Setup"
+
+captive_portal:
+improv_serial:
+
+# 2. Made for ESPHome Certification Requirements
+dashboard_import:
+  package_import_url: github://EllipsysLabs/esphome-configs/4/congig.yaml@main
+  import_full_config: true
+
+# 3. System Actions
+button:
+  - platform: factory_reset
+    name: "Factory Reset Action"
+    id: factory_reset_action
+
+# 4. Hardware Outputs (Relays)
+switch:
+  - platform: gpio
+    name: "Relay 1"
+    pin: 0
+    id: relay_1
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: gpio
+    name: "Relay 2"
+    pin: 1
+    id: relay_2
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: gpio
+    name: "Relay 3"
+    pin: 3
+    id: relay_3
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: gpio
+    name: "Relay 4"
+    pin: 4
+    id: relay_4
+    restore_mode: RESTORE_DEFAULT_OFF
+
+# 5. Hardware Inputs (Physical Switches & Reset Pin)
+binary_sensor:
+  # Physical Switch 1
+  - platform: gpio
+    pin:
+      number: 5
+      mode:
+        input: true
+        pullup: true
+    name: "Switch 1"
+    id: switch_1
+    filters:
+      - delayed_on_off: 50ms
+    on_state:
+      - switch.toggle: relay_1
+
+  # Physical Switch 2
+  - platform: gpio
+    pin:
+      number: 6
+      mode:
+        input: true
+        pullup: true
+    name: "Switch 2"
+    id: switch_2
+    filters:
+      - delayed_on_off: 50ms
+    on_state:
+      - switch.toggle: relay_2
+
+  # Physical Switch 3
+  - platform: gpio
+    pin:
+      number: 7
+      mode:
+        input: true
+        pullup: true
+    name: "Switch 3"
+    id: switch_3
+    filters:
+      - delayed_on_off: 50ms
+    on_state:
+      - switch.toggle: relay_3
+
+  # Physical Switch 4
+  - platform: gpio
+    pin:
+      number: 10
+      mode:
+        input: true
+        pullup: true
+    name: "Switch 4"
+    id: switch_4
+    filters:
+      - delayed_on_off: 50ms
+    on_state:
+      - switch.toggle: relay_4
+
+  # Factory Reset Pin
+  - platform: gpio
+    pin:
+      number: 21
+      mode:
+        input: true
+        pullup: true
+      inverted: true # Inverted so that connecting to Ground registers as 'ON'
+    name: "Factory Reset Pin"
+    id: reset_pin
+    filters:
+      - delayed_on: 5s # Requires the pin to be held low for 5 full seconds
+    on_press:
+      - button.press: factory_reset_action
